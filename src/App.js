@@ -1,46 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import SignupPage from "./components/SignupPage";
 
 const App = () => {
     const [user, setUser] = useState(null);
-
-    useEffect(() => {
-        const handleUser = (user) => {
-            if (!user) {
-                let name = prompt("Name:");
-                while (name.length === 0) {
-                    name = prompt(
-                        "Please, Enter correct information about Name:"
-                    );
-                }
-                let age = parseInt(prompt("Age:"));
-                while (!age) {
-                    age = parseInt(
-                        prompt("Please, Enter correct information about age:")
-                    );
-                }
-                let height = parseInt(prompt("Height (cm):"));
-                while (!height) {
-                    height = parseInt(
-                        prompt(
-                            "Please, Enter correct information about Height (cm):"
-                        )
-                    );
-                }
-                let weight = parseInt(prompt("Weight (kg):"));
-                while (!weight) {
-                    weight = parseInt(
-                        prompt(
-                            "Please, Enter correct information about Weight (kg):"
-                        )
-                    );
-                }
-
-                setUser({ ...user, name, age, weight, height });
-            }
-        };
-
-        handleUser();
-    }, []);
 
     const questions = [
         {
@@ -114,6 +76,22 @@ const App = () => {
                 { answerText: "No", isCorrect: false },
             ],
         },
+        {
+            questionText:
+                "On a scale of 1 to 5 rate your stress levels, 1 being the lowest and 5 being the highest",
+            answerOptions: [
+                { answerText: "1 - 3", isCorrect: true },
+                { answerText: "4 - 5", isCorrect: false },
+            ],
+        },
+        {
+            questionText:
+                "Rate your daily screen time including phones and laptops",
+            answerOptions: [
+                { answerText: "1-3 hours", isCorrect: true },
+                { answerText: "More than 5 hours", isCorrect: false },
+            ],
+        },
     ];
 
     const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -134,50 +112,57 @@ const App = () => {
     };
 
     return (
-        <div className={`app ${showScore && "app__len"}`}>
-            {user && (
-                <div className={`user ${showScore && "user__len"}`}>
-                    <span className="name">{`Name: ${user.name}`}</span>
-                    <span className="age">{`Age: ${user.age}`}</span>
-                    <span className="height">{`Height: ${user.height} cm`}</span>
-                    <span className="weight">{`Weight: ${user.weight} kg`}</span>
-                </div>
-            )}
-            {showScore ? (
-                <div className="score-section">
-                    You are at {score}0% risk of PCOD (Polycystic ovary
-                    syndrome)
+        <>
+            {user ? (
+                <div className={`app ${showScore && "app__len"}`}>
+                    {user && (
+                        <div className={`user ${showScore && "user__len"}`}>
+                            <span className="name">{`Name: ${user.name}`}</span>
+                            <span className="age">{`Age: ${user.age}`}</span>
+                            <span className="height">{`Height: ${user.height} cm`}</span>
+                            <span className="weight">{`Weight: ${user.weight} kg`}</span>
+                        </div>
+                    )}
+                    {showScore ? (
+                        <div className="score-section">
+                            You are at{" "}
+                            {score > 8 ? (12 / 15) * 100 : score * 10}% risk of
+                            PCOD (Polycystic ovary syndrome)
+                        </div>
+                    ) : (
+                        <>
+                            <div className="question-section">
+                                <div className="question-count">
+                                    <span>Question {currentQuestion + 1}</span>/
+                                    {questions.length}
+                                </div>
+                                <div className="question-text">
+                                    {questions[currentQuestion].questionText}
+                                </div>
+                            </div>
+                            <div className="answer-section">
+                                {questions[currentQuestion].answerOptions.map(
+                                    (answerOption, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() =>
+                                                handleAnswerOptionClick(
+                                                    answerOption.isCorrect
+                                                )
+                                            }
+                                        >
+                                            {answerOption.answerText}
+                                        </button>
+                                    )
+                                )}
+                            </div>
+                        </>
+                    )}
                 </div>
             ) : (
-                <>
-                    <div className="question-section">
-                        <div className="question-count">
-                            <span>Question {currentQuestion + 1}</span>/
-                            {questions.length}
-                        </div>
-                        <div className="question-text">
-                            {questions[currentQuestion].questionText}
-                        </div>
-                    </div>
-                    <div className="answer-section">
-                        {questions[currentQuestion].answerOptions.map(
-                            (answerOption, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() =>
-                                        handleAnswerOptionClick(
-                                            answerOption.isCorrect
-                                        )
-                                    }
-                                >
-                                    {answerOption.answerText}
-                                </button>
-                            )
-                        )}
-                    </div>
-                </>
+                <SignupPage setUser={setUser} />
             )}
-        </div>
+        </>
     );
 };
 
